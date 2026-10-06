@@ -65,22 +65,22 @@ SQLite CTEs and a window function transform normalized tables into RFM and behav
 
 ## Repurchase Prediction
 
-Each row is a temporal snapshot: features end at a cutoff, and the target asks whether the customer purchases in the following 45 days. Every training label window closes before the final test cutoff, preventing future purchases from leaking into features. PR-AUC is emphasized alongside the precision/recall trade-off because repurchasers are the positive class of interest.
+Each row is a temporal snapshot: features end at a cutoff, and the target asks whether the customer purchases in the following 45 days. Models fit only on four historical training snapshots. A later validation snapshot selects the model and campaign threshold; both decisions are then frozen before one final evaluation on the latest future test snapshot. Every label window closes before the next decision period, preventing future purchases from leaking into features.
 
-Actual held-out results at the default 0.50 threshold:
+Validation comparison at the default 0.50 threshold:
 
 | Model | Precision | Recall | F1 | ROC-AUC | PR-AUC |
 |---|---:|---:|---:|---:|---:|
-| Logistic Regression | 0.587 | 0.743 | 0.656 | 0.793 | 0.669 |
-| Gradient Boosting | 0.656 | 0.617 | 0.636 | 0.811 | 0.698 |
+| Logistic Regression | 0.601 | 0.725 | 0.657 | 0.792 | 0.667 |
+| Gradient Boosting | 0.670 | 0.575 | 0.619 | 0.805 | 0.686 |
 
-For a low-cost retention campaign, a `0.44` gradient-boosting threshold produces recall of `0.702` with precision of `0.617`. The threshold reflects campaign economics rather than treating `0.50` as automatically optimal.
+Gradient Boosting is selected from validation PR-AUC. For a low-cost retention campaign, the highest-precision validation threshold achieving at least 70% recall is `0.42` (precision `0.628`, recall `0.700`, F1 `0.662`). After freezing that threshold, the untouched test snapshot produces precision `0.616`, recall `0.709`, F1 `0.659`, ROC-AUC `0.809`, and PR-AUC `0.687`.
 
 ## Product Recommendation
 
 The explainable recommender combines **customer category affinity + category-level product popularity** and permits repeat products for replenishment use cases. A leave-last-order-out evaluation produces **HitRate@3 = 19.8%** across 600 synthetic customers.
 
-Example: customer `C2911` → **Home Item 02**, **Home Item 01**, **Home Item 03**.
+Example: customer `C3765` → **Sports Item 02**, **Sports Item 01**, **Sports Item 03**.
 
 ## From Analytics to Action
 
