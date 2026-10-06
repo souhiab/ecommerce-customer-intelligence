@@ -1,0 +1,577 @@
+{
+  "name": "E-commerce Customer Intelligence",
+  "short": "E-COMMERCE",
+  "accent": "#14766F",
+  "tint": "#EAF3EE",
+  "figures": [
+    {
+      "index": 1,
+      "level": "overview",
+      "slug": "01_overview",
+      "title": "Turn purchase history into a customer action",
+      "subtitle": "Three complementary answers help shape a campaign that can then be tested.",
+      "cards": [
+        {
+          "rect": [
+            5,
+            26,
+            20,
+            13
+          ],
+          "eyebrow": "INPUT",
+          "title": "Purchase history",
+          "body": "Customers, orders,\nproducts and order items"
+        },
+        {
+          "rect": [
+            31,
+            17,
+            22,
+            9
+          ],
+          "eyebrow": "WHO",
+          "title": "Customer segment",
+          "body": "Lifecycle and value group",
+          "title_size": 14
+        },
+        {
+          "rect": [
+            31,
+            28.5,
+            22,
+            9
+          ],
+          "eyebrow": "WHEN",
+          "title": "Repurchase score",
+          "body": "Purchase in the next 45 days",
+          "title_size": 14,
+          "body_size": 10.6
+        },
+        {
+          "rect": [
+            31,
+            40,
+            22,
+            9
+          ],
+          "eyebrow": "WHAT",
+          "title": "Top products",
+          "body": "Category affinity + popularity",
+          "title_size": 14,
+          "body_size": 10.2
+        },
+        {
+          "rect": [
+            60,
+            26,
+            18,
+            13
+          ],
+          "eyebrow": "COMBINE",
+          "title": "One customer\nview",
+          "body": "Segment + score +\nrecommended products",
+          "dark": true,
+          "title_size": 15
+        },
+        {
+          "rect": [
+            84,
+            26,
+            11,
+            13
+          ],
+          "eyebrow": "NEXT STEP",
+          "title": "Campaign\ntest",
+          "body": "A/B test\nbusiness impact",
+          "proposed": true,
+          "title_size": 12,
+          "body_size": 10.5
+        }
+      ],
+      "edges": [
+        {
+          "points": [
+            [
+              25,
+              32.5
+            ],
+            [
+              28,
+              32.5
+            ],
+            [
+              28,
+              21.5
+            ],
+            [
+              31,
+              21.5
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              28,
+              32.5
+            ],
+            [
+              31,
+              33
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              28,
+              32.5
+            ],
+            [
+              28,
+              44.5
+            ],
+            [
+              31,
+              44.5
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              53,
+              21.5
+            ],
+            [
+              56,
+              21.5
+            ],
+            [
+              56,
+              32.5
+            ],
+            [
+              60,
+              32.5
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              53,
+              33
+            ],
+            [
+              60,
+              33
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              53,
+              44.5
+            ],
+            [
+              56,
+              44.5
+            ],
+            [
+              56,
+              33
+            ],
+            [
+              60,
+              33
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              78,
+              32.5
+            ],
+            [
+              84,
+              32.5
+            ]
+          ],
+          "dashed": true
+        }
+      ],
+      "evidence": [
+        [
+          "5 segments",
+          "Actionable lifecycle groups"
+        ],
+        [
+          "0.687 PR-AUC",
+          "Final future test snapshot"
+        ],
+        [
+          "19.8% HitRate@3",
+          "600 synthetic customers"
+        ]
+      ],
+      "footer": "Synthetic demonstration. Dashed card = proposed online experiment; no causal revenue uplift measured."
+    },
+    {
+      "index": 2,
+      "level": "implementation",
+      "slug": "02_implementation",
+      "title": "How the repository produces the customer view",
+      "subtitle": "Notebook 1 explains behavior. Notebook 2 combines segments, scores and recommendations.",
+      "cards": [
+        {
+          "rect": [
+            5,
+            17,
+            27,
+            13
+          ],
+          "eyebrow": "DATA / SAMPLE",
+          "title": "Four normalized tables",
+          "body": "4,000 customers · 180 products\n22,373 orders · 52,993 items"
+        },
+        {
+          "rect": [
+            36.5,
+            17,
+            27,
+            13
+          ],
+          "eyebrow": "SQL + NOTEBOOK 01",
+          "title": "Customer analytics",
+          "body": "SQLite CTEs + window function\nRFM, cadence, category breadth"
+        },
+        {
+          "rect": [
+            68,
+            17,
+            27,
+            13
+          ],
+          "eyebrow": "NOTEBOOK 01 + 02",
+          "title": "K-Means segments",
+          "body": "Full-history descriptive segments\nImpute → log1p → standardize\nCompare k = 2…6; retain k = 5"
+        },
+        {
+          "rect": [
+            5,
+            35,
+            27,
+            13
+          ],
+          "eyebrow": "NOTEBOOK 02 / WHEN",
+          "title": "Temporal repurchase",
+          "body": "Cutoff-safe historical features\nHistGradientBoostingClassifier"
+        },
+        {
+          "rect": [
+            36.5,
+            35,
+            27,
+            13
+          ],
+          "eyebrow": "NOTEBOOK 02 / WHAT",
+          "title": "Affinity recommender",
+          "body": "Category affinity + popularity\nLast-order holdout evaluation"
+        },
+        {
+          "rect": [
+            68,
+            35,
+            27,
+            13
+          ],
+          "eyebrow": "NOTEBOOK 02 / ACTION",
+          "title": "Illustrative customer view",
+          "body": "Merge segment + probability\n+ top products + treatment idea",
+          "dark": true,
+          "title_size": 13.5
+        }
+      ],
+      "edges": [
+        {
+          "points": [
+            [
+              32,
+              23.5
+            ],
+            [
+              36.5,
+              23.5
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              63.5,
+              23.5
+            ],
+            [
+              68,
+              23.5
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              18.5,
+              30
+            ],
+            [
+              18.5,
+              35
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              23,
+              30
+            ],
+            [
+              23,
+              32.5
+            ],
+            [
+              50,
+              32.5
+            ],
+            [
+              50,
+              35
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              81.5,
+              30
+            ],
+            [
+              81.5,
+              35
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              32,
+              41.5
+            ],
+            [
+              34,
+              41.5
+            ],
+            [
+              34,
+              49
+            ],
+            [
+              65.5,
+              49
+            ],
+            [
+              65.5,
+              44
+            ],
+            [
+              68,
+              44
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              63.5,
+              40
+            ],
+            [
+              68,
+              40
+            ]
+          ]
+        }
+      ],
+      "evidence": [
+        [
+          "01 → 02",
+          "Run the two notebooks in order"
+        ],
+        [
+          "Independent branches",
+          "Segments do not feed the classifier"
+        ],
+        [
+          "Action hypotheses",
+          "Campaign impact still needs testing"
+        ]
+      ],
+      "footer": "Sources: sql/customer_features.sql; notebooks/01_customer_analytics_and_segmentation.ipynb; notebook 02."
+    },
+    {
+      "index": 3,
+      "level": "technical",
+      "slug": "03_technical",
+      "title": "Separate model fitting, decisions and final testing",
+      "subtitle": "One row = one customer at a cutoff; only the label looks into the following 45 days.",
+      "cards": [
+        {
+          "rect": [
+            5,
+            17,
+            27,
+            15
+          ],
+          "eyebrow": "TRAIN / FOUR SNAPSHOTS",
+          "title": "Fit both models",
+          "body": "Cutoffs: Feb 28 · Apr 30\nJun 30 · Aug 15, 2025\nLatest label ends Sep 29"
+        },
+        {
+          "rect": [
+            36.5,
+            17,
+            27,
+            15
+          ],
+          "eyebrow": "VALIDATE / SEP 30, 2025",
+          "title": "Choose model + threshold",
+          "body": "Select by validation PR-AUC\nMaximize precision at recall ≥70%\nLabel window ends Nov 14",
+          "title_size": 14.5,
+          "body_size": 10.8
+        },
+        {
+          "rect": [
+            68,
+            17,
+            27,
+            15
+          ],
+          "eyebrow": "TEST / NOV 15, 2025",
+          "title": "Evaluate frozen decisions",
+          "body": "Use threshold 0.42 unchanged\nFinal 45-day label ends Dec 30\nNo test-driven tuning",
+          "dark": true
+        },
+        {
+          "rect": [
+            5,
+            36,
+            27,
+            12
+          ],
+          "eyebrow": "PREPROCESSING",
+          "title": "Train-only fitting",
+          "body": "Median imputation + scaling\nOne-hot categorical encoding"
+        },
+        {
+          "rect": [
+            36.5,
+            36,
+            27,
+            12
+          ],
+          "eyebrow": "DECISION RULE",
+          "title": "Freeze before test",
+          "body": "HistGradientBoostingClassifier\nCampaign threshold = 0.42",
+          "title_size": 15
+        },
+        {
+          "rect": [
+            68,
+            36,
+            27,
+            12
+          ],
+          "eyebrow": "RECOMMENDER CHECK",
+          "title": "Separate evaluation",
+          "body": "Leave last order out\nHitRate@3 on 600 customers"
+        }
+      ],
+      "edges": [
+        {
+          "points": [
+            [
+              32,
+              24.5
+            ],
+            [
+              36.5,
+              24.5
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              50,
+              32
+            ],
+            [
+              50,
+              36
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              63.5,
+              42
+            ],
+            [
+              65.5,
+              42
+            ],
+            [
+              65.5,
+              24.5
+            ],
+            [
+              68,
+              24.5
+            ]
+          ]
+        },
+        {
+          "points": [
+            [
+              18.5,
+              36
+            ],
+            [
+              18.5,
+              32
+            ]
+          ]
+        }
+      ],
+      "evidence": [
+        [
+          "0.616 precision",
+          "Final test at threshold 0.42"
+        ],
+        [
+          "0.709 recall",
+          "Final test at threshold 0.42"
+        ],
+        [
+          "0.687 PR-AUC",
+          "Final test ranking performance"
+        ]
+      ],
+      "footer": "Source: notebooks/02_repurchase_and_recommendation.ipynb. Repeated customers are allowed across cutoffs."
+    }
+  ]
+}
