@@ -28,6 +28,17 @@ Business Action
 Monitoring / A-B Testing
 ```
 
+## Two-Minute Repository Tour
+
+| Step | Open this file | What it demonstrates |
+|---|---|---|
+| 1 | [`data/generate_synthetic_data.py`](data/generate_synthetic_data.py) | Reproducible customer archetypes, purchase behavior, and four normalized tables |
+| 2 | [`sql/customer_features.sql`](sql/customer_features.sql) | CTEs and a window function that turn transactions into one row per customer |
+| 3 | [`notebooks/01_customer_analytics_and_segmentation.ipynb`](notebooks/01_customer_analytics_and_segmentation.ipynb) | Data checks, KPIs, behavior analysis, feature preparation, K-Means, and business actions |
+| 4 | [`notebooks/02_repurchase_and_recommendation.ipynb`](notebooks/02_repurchase_and_recommendation.ipynb) | Leakage-safe temporal snapshots, validation-only threshold selection, final test evaluation, and recommendations |
+
+For an interview, start with this README, show the SQL query, then open the two notebooks at their summary tables and charts. Each major code cell includes a short comment explaining its purpose and each analytical section ends with a business interpretation.
+
 ## Synthetic Dataset
 
 All data is **synthetic and generated specifically for demonstration and interview purposes**. The deterministic generator creates 4,000 fictional customers, 180 products, 22,373 orders, and 52,993 order items covering January 2024–December 2025. No private, client, or real-company data is included, and none of the results should be interpreted as real company performance.
@@ -113,16 +124,16 @@ A production version could expose batch scores or a small API, package the score
 
 ```text
 ecommerce-customer-intelligence/
-├── README.md
-├── requirements.txt
+├── README.md                         # Project story, results, and interview guide
+├── requirements.txt                 # Minimal pinned Python dependencies
 ├── data/
-│   ├── generate_synthetic_data.py
-│   └── sample/
-├── sql/customer_features.sql
+│   ├── generate_synthetic_data.py    # Deterministic fictional-data generator
+│   └── sample/                       # Four generated CSV tables
+├── sql/customer_features.sql         # Customer-level analytical feature query
 ├── notebooks/
-│   ├── 01_customer_analytics_and_segmentation.ipynb
-│   └── 02_repurchase_and_recommendation.ipynb
-└── assets/
+│   ├── 01_customer_analytics_and_segmentation.ipynb  # WHAT/HOW/WHO
+│   └── 02_repurchase_and_recommendation.ipynb        # WHEN/WHAT/ACTION
+└── assets/                           # README-quality charts from notebooks
 ```
 
 ## Running the Project

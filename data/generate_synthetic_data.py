@@ -18,6 +18,11 @@ OUTPUT_DIR = Path(__file__).resolve().parent / "sample"
 
 
 def generate_products(rng: np.random.Generator) -> pd.DataFrame:
+    """Create a catalog with category-specific price levels.
+
+    Products are deliberately unevenly distributed across categories so the
+    later category-affinity recommender has realistic choices to rank.
+    """
     categories = {
         "Electronics": 85,
         "Home": 42,
@@ -49,6 +54,13 @@ def generate_products(rng: np.random.Generator) -> pd.DataFrame:
 
 
 def generate_customers(rng: np.random.Generator) -> pd.DataFrame:
+    """Create fictional customers and assign a hidden behavior archetype.
+
+    The private ``_archetype`` column controls data generation only. It is
+    removed before export, so the downstream analysis must infer behavior from
+    transactions instead of receiving a pre-made segment label.
+    """
+    # Archetypes create meaningful differences in frequency, value, and churn.
     archetypes = rng.choice(
         ["high_value_repeat", "loyal", "occasional", "dormant", "recent"],
         size=N_CUSTOMERS,
@@ -66,6 +78,7 @@ def generate_customers(rng: np.random.Generator) -> pd.DataFrame:
     )
     signup_dates = []
     for archetype in archetypes:
+        # The recent cohort signs up later; other cohorts span most of history.
         if archetype == "recent":
             low, high = pd.Timestamp("2025-06-01"), pd.Timestamp("2025-11-20")
         else:
@@ -85,6 +98,13 @@ def generate_customers(rng: np.random.Generator) -> pd.DataFrame:
 def generate_orders_and_items(
     rng: np.random.Generator, customers: pd.DataFrame, products: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Generate orders and line items from each customer's behavior profile.
+
+    Purchase gaps, churn probability, basket size, and spend multipliers vary
+    by archetype. Customers also favor two categories, which creates a usable
+    but imperfect recommendation signal.
+    """
+    # These profiles shape behavior without making later ML targets deterministic.
     behavior = {
         "high_value_repeat": {"first_delay": 8, "gap": 30, "churn": 0.018, "basket": 3.0, "value": 1.25},
         "loyal": {"first_delay": 14, "gap": 53, "churn": 0.035, "basket": 2.4, "value": 1.05},
@@ -105,12 +125,14 @@ def generate_orders_and_items(
 
     for customer_id, signup_date, _country, _channel, archetype in customers.itertuples(index=False, name=None):
         profile = behavior[archetype]
+        # Category preference is persistent, with room for exploration.
         favorite_categories = rng.choice(category_names, size=2, replace=False)
         current_date = pd.Timestamp(signup_date) + pd.Timedelta(
             days=max(1, int(rng.gamma(1.8, profile["first_delay"] / 1.8)))
         )
         stop_date = END_DATE
         if archetype == "dormant":
+            # Dormant customers stop buying before the dataset ends.
             stop_date = pd.Timestamp("2024-08-01") + pd.Timedelta(days=int(rng.integers(0, 330)))
 
         while current_date <= min(stop_date, END_DATE):
@@ -118,6 +140,7 @@ def generate_orders_and_items(
             item_count = int(np.clip(rng.poisson(profile["basket"] - 1) + 1, 1, 5))
             chosen_products: list[str] = []
             for _ in range(item_count):
+                # Most items come from preferred categories; the rest add variety.
                 if rng.random() < 0.72:
                     category = rng.choice(favorite_categories, p=[0.72, 0.28])
                 else:
@@ -157,6 +180,7 @@ def generate_orders_and_items(
 
             if rng.random() < profile["churn"]:
                 break
+            # Gamma-distributed gaps vary naturally around each profile's cadence.
             mean_gap = profile["gap"] * rng.lognormal(0, 0.16)
             gap_days = max(6, int(rng.gamma(2.4, mean_gap / 2.4)))
             current_date += pd.Timedelta(days=gap_days)
@@ -165,11 +189,13 @@ def generate_orders_and_items(
 
 
 def main() -> None:
+    """Generate and save all four public synthetic tables."""
     rng = np.random.default_rng(SEED)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     products = generate_products(rng)
     customers_internal = generate_customers(rng)
     orders, order_items = generate_orders_and_items(rng, customers_internal, products)
+    # Never expose the hidden archetype as a modeling shortcut or target leak.
     customers = customers_internal.drop(columns="_archetype")
 
     customers.to_csv(OUTPUT_DIR / "customers.csv", index=False, date_format="%Y-%m-%d")

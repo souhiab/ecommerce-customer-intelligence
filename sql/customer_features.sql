@@ -2,6 +2,7 @@
 -- SQLite-compatible and intentionally readable for interview discussion.
 
 WITH order_history AS (
+    -- RFM-style value and lifecycle dates at one row per customer.
     SELECT
         customer_id,
         MIN(order_date) AS first_purchase_date,
@@ -13,6 +14,7 @@ WITH order_history AS (
     GROUP BY customer_id
 ),
 category_counts AS (
+    -- Rank each customer's categories by purchased units; name breaks ties deterministically.
     SELECT
         o.customer_id,
         p.category,
@@ -27,6 +29,7 @@ category_counts AS (
     GROUP BY o.customer_id, p.category
 ),
 category_features AS (
+    -- Collapse ranked category behavior back to the customer grain.
     SELECT
         customer_id,
         COUNT(*) AS unique_categories,
@@ -35,6 +38,7 @@ category_features AS (
     GROUP BY customer_id
 )
 SELECT
+    -- Recency is measured against the fixed synthetic-data observation date.
     c.customer_id,
     CAST(julianday('2025-12-31') - julianday(oh.last_purchase_date) AS INTEGER) AS recency_days,
     oh.frequency,
@@ -42,6 +46,7 @@ SELECT
     ROUND(oh.average_order_value, 2) AS average_order_value,
     CAST(julianday('2025-12-31') - julianday(oh.first_purchase_date) AS INTEGER) AS days_since_first_purchase,
     CASE
+        -- N orders contain N-1 intervals; one-time customers have no interval.
         WHEN oh.frequency > 1 THEN ROUND(
             (julianday(oh.last_purchase_date) - julianday(oh.first_purchase_date))
             / (oh.frequency - 1), 1
