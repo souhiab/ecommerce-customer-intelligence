@@ -2,6 +2,20 @@
 
 **Customer Behavior • Segmentation • Repurchase Prediction • Product Recommendation**
 
+## Visual walkthrough
+
+Start with the overview, then follow the implementation and technical views for more detail.
+
+![Project workflow overview](assets/workflows/01_overview.png)
+
+| View | What it explains |
+|---|---|
+| [01 · Overview](assets/workflows/01_overview.png) | The problem, workflow and decision it supports |
+| [02 · Implementation](assets/workflows/02_implementation.png) | How the files and notebooks produce the outputs |
+| [03 · Technical](assets/workflows/03_technical.png) | Evaluation boundaries, algorithms and decision rules |
+
+[Three-page visual walkthrough (PDF)](assets/workflows/workflow_figures.pdf) · [All figures, sources and reading notes](docs/workflow_figures.md)
+
 ## Business Problem
 
 This compact case study asks seven practical questions: What is happening in the business? How do customers behave? Who are the customers? When might they buy again? What should we recommend? What action should the business take? Did that action work? The project answers them with SQL, descriptive analytics, machine learning, and an experimentation-oriented business interpretation.
